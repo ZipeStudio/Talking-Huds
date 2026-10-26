@@ -1,0 +1,45 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}",
+    "version": "${mod_version}",
+    "name": "${mod_name}",
+    "description": "${mod_description}",
+    "authors": [
+        "${mod_authors}"
+    ],
+    "contact": {
+        "homepage": "https://modrinth.com/mod/${mod_slug}",
+        "issues": "https://github.com/${github_author}/${mod_slug}"
+    },
+    "license": "${mod_license}",
+    "icon": "icon/icon.png",
+    "environment": "${fabric_trick_side}",
+    "entrypoints": {
+        "main": [
+            "me.zipestudio.talkinghuds.entrypoint.CommonEntrypoint"
+        ],
+        "client": [
+            "me.zipestudio.talkinghuds.entrypoint.ClientEntrypoint"
+        ],
+        "modmenu": [
+            "me.zipestudio.talkinghuds.utils.modmenu.ModMenuIntegration"
+        ],
+        "voicechat": [
+            "me.zipestudio.talkinghuds.client.voice.SimpleVoiceAddon"
+        ]
+    },
+    "depends": {
+        "fabricloader": ">=${fabric_loader}",
+        "minecraft": ">=${minecraft}",
+        "java": ">=${java}",
+        "${fabric_api_id}": "*"
+    },
+    "recommends": {
+        "plasmo-voice": ">=${plasmo_voice}",
+        "simple-voice-chat": ">=${simple_voice_chat}"
+    },
+	"accessWidener": "${fabric_trick_accesswidener_id}",
+    "mixins": [
+        "${fabric_trick_mixin_configs}"
+    ]
+}

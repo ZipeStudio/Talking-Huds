@@ -1,0 +1,83 @@
+import net.lopymine.utils.MossyUtils
+
+plugins {
+	id "net.lopymine.mossy-plugin-core" version "$mossy_plugin_version"
+}
+
+mossyDependencies {
+
+	minecraft = stonecutter.current.version.toString()
+	lombok = prop("base.lombok_version")
+
+	fabricApi = prop("build.fabric_api")
+	fabricLoader = prop("build.fabric_loader")
+
+	forge = prop("build.forge")
+
+	neoForge = prop("build.neoforge")
+	parchment = prop("build.parchment")
+
+	additional {
+		//override("modCompileOnly", "yacl")
+//		disable("plasmo-voice")
+//		disable("simple-voice-chat")
+	}
+
+}
+
+String plasmoVoiceRaw = prop("dep.plasmo-voice")
+boolean plasmoVoiceSnapshot = plasmoVoiceRaw.contains("SNAPSHOT")
+String plasmoVoiceVersion = plasmoVoiceRaw == "unknown" ? "unknown" : MossyUtils.substringSinceLast(plasmoVoiceRaw.replace("-SNAPSHOT", ""), "-")
+
+String simpleVoiceChatRaw = prop("dep.simple-voice-chat")
+String simpleVoiceChatVersion = simpleVoiceChatRaw.contains("+")
+		? MossyUtils.substringBefore(MossyUtils.substringSince(simpleVoiceChatRaw, "-"), "+")
+		: MossyUtils.substringSinceLast(simpleVoiceChatRaw, "-")
+
+repositories {
+
+	mavenCentral()
+
+	// Plasmo Voice
+	maven {
+		name = 'plasmoverse-releases'
+		url = 'https://repo.plasmoverse.com/releases'
+	}
+	maven {
+		name = 'plasmoverse-snapshots'
+		url = 'https://repo.plasmoverse.com/snapshots'
+	}
+
+	// Simple Voice
+	maven {
+		name = "henkelmax.public"
+		url = 'https://maven.maxhenkel.de/repository/public'
+	}
+
+}
+
+dependencies {
+
+	if (plasmoVoiceVersion != "unknown") {
+		implementation("su.plo.voice.api:client:${plasmoVoiceSnapshot ? plasmoVoiceVersion + "-SNAPSHOT" : plasmoVoiceVersion}")
+	}
+
+	implementation("de.maxhenkel.voicechat:voicechat-api:${simpleVoiceChatVersion}")
+
+}
+
+stonecutter {
+	replacements.string(current.parsed >= "26.1") {
+		replace("GuiGraphics", "GuiGraphicsExtractor")
+	}
+}
+
+mossyResources {
+	//	expandFiles = ["file pattern"]
+	customProperty("plasmo_voice", plasmoVoiceVersion)
+	customProperty("simple_voice_chat", simpleVoiceChatVersion)
+}
+
+String prop(String key) {
+	return findProperty(key).toString()
+}

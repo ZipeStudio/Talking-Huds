@@ -1,0 +1,18 @@
+{
+	"required": true,
+	"package": "me.zipestudio.talkinghuds.mixin",
+	"refmap": "${mod_id}.refmap.json",
+	"compatibilityLevel": "JAVA_${java}",
+	"mixins": [],
+	"client": [
+		//? if >=1.21.6 {
+		"LocatorBarRendererMixin",
+		//?}
+		"PlasmoVoiceIconsMixin",
+		"SimpleVoiceIconsMixin",
+		"SubtitleOverlayHolder"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

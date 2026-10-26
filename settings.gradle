@@ -1,0 +1,36 @@
+pluginManagement {
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
+		mavenLocal()
+		maven {
+			name "Fabric"
+			url "https://maven.fabricmc.net/"
+		}
+		maven {
+			name "Kiku Snapshots"
+			url "https://maven.kikugie.dev/snapshots"
+		}
+		maven {
+			name "Kiku Releases"
+			url "https://maven.kikugie.dev/releases"
+		}
+		maven {
+			name "Mossy Projects Releases"
+			url "https://maven.lopymine.net/releases"
+		}
+		maven {
+			name "Mossy Projects Snapshots"
+			url "https://maven.lopymine.net/snapshots"
+		}
+		maven {
+			name "NeoForge Releases"
+			url "https://maven.neoforged.net/releases"
+		}
+	}
+}
+
+plugins {
+	id "dev.kikugie.stonecutter" version "0.9"
+	id "net.lopymine.mossy-plugin-settings" version "$mossy_plugin_version"
+}
