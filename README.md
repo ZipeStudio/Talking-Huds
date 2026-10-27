@@ -39,9 +39,9 @@
 
 **Talking Huds** — A Client-side addon for [Plasmo Voice](https://modrinth.com/mod/plasmo-voice) & [Simple Voice Chat](https://modrinth.com/mod/simple-voice-chat), that replaces their voice overlay with a new one that has several styles.
 
-## Showcase
+### Showcase
 
-### Locator Bar
+**Locator Bar**
 <img src="https://github.com/ZipeStudio/talking-huds/blob/master/assets/locator_bar.webp?raw=true" width="100%" alt="locator_bar">
 
 !["Compatibility" Title](https://github.com/ZipeStudio/Vault/blob/main/design/mods/main/ZScompatible.png?raw=true)
