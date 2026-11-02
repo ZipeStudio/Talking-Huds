@@ -6,16 +6,13 @@ import me.zipestudio.talkinghuds.config.LeafyConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-public record Talker(UUID uuid, double volume, float presence, boolean talking, FaceTexture face,
-                     Component name, @Nullable Vec3 position, boolean self) {
+public record Talker(UUID uuid, double volume, float presence, boolean talking, FaceTexture face, Component name) {
 
 	public static List<Talker> collectVisible(Minecraft mc, LeafyConfig config) {
 		List<Talker> talkers = new ArrayList<>();
@@ -33,14 +30,13 @@ public record Talker(UUID uuid, double volume, float presence, boolean talking, 
 			if (self && !config.isShowSelf()) {
 				continue;
 			}
-			float presence = THManager.getDisplayAlpha(profile, fadeMs, now);
+			float presence = THManager.getPresence(profile, fadeMs, now);
 			if (presence <= THManager.MIN_VISIBLE_ALPHA) {
 				continue;
 			}
 			if (mc.level.getPlayerByUUID(profile.getUuid()) instanceof AbstractClientPlayer player) {
 				talkers.add(new Talker(profile.getUuid(), profile.getVolume(), presence,
-						THManager.isTalking(profile, now), FaceTexture.of(player), player.getName(),
-						player.position(), self));
+						THManager.isTalking(profile, now), FaceTexture.of(player), player.getName()));
 			}
 		}
 		return talkers;

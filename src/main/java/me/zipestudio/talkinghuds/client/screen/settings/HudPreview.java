@@ -3,8 +3,8 @@ package me.zipestudio.talkinghuds.client.screen.settings;
 import me.zipestudio.talkinghuds.TalkingHuds;
 import me.zipestudio.talkinghuds.client.THManager;
 import me.zipestudio.talkinghuds.client.render.Anim;
+import me.zipestudio.talkinghuds.client.render.Bounds;
 import me.zipestudio.talkinghuds.client.render.Draw;
-import me.zipestudio.talkinghuds.client.render.FaceRenderer;
 import me.zipestudio.talkinghuds.client.render.FaceTexture;
 //? if >=1.21.6 {
 import me.zipestudio.talkinghuds.client.render.TalkingBarRenderer;
@@ -31,11 +31,10 @@ public final class HudPreview {
 	private static final String[] NAMES = {"Steve", "Alex", "Notch", "Jeb_"};
 	private static final int SELECT_COLOR = 0x50FFFFFF;
 	private static final int SELECT_FILL = 0x0CFFFFFF;
-	private static final int[] NO_BOUNDS = {0, 0, 0, 0};
 
 	private final List<Speaker> speakers = new ArrayList<>();
 	private final TalkerAnimator animator = new TalkerAnimator();
-	private int[] bounds = NO_BOUNDS;
+	private Bounds bounds = Bounds.NONE;
 	private boolean frozen;
 	private long pausedMs;
 	private long pausedAt;
@@ -47,7 +46,7 @@ public final class HudPreview {
 		}
 	}
 
-	public int[] bounds() {
+	public Bounds bounds() {
 		return bounds;
 	}
 
@@ -69,8 +68,7 @@ public final class HudPreview {
 	}
 
 	public boolean overHud(double x, double y) {
-		return bounds[2] > 0 && x >= bounds[0] && x <= bounds[0] + bounds[2]
-				&& y >= bounds[1] && y <= bounds[1] + bounds[3];
+		return bounds.contains(x, y);
 	}
 
 	public void render(GuiGraphics graphics, Font font, LeafyConfig config, SettingsLayout layout) {
@@ -89,11 +87,11 @@ public final class HudPreview {
 		DisplayMode mode = config.getDisplayMode();
 		if (mode.isMovable()) {
 			bounds = TalkingOverlayRenderer.renderMode(graphics, font, config, talkers, animator);
-		} else if (mode == DisplayMode.BAR) {
-			bounds = NO_BOUNDS;
+		} else if (mode == DisplayMode.LOCATOR_BAR) {
+			bounds = Bounds.NONE;
 			renderBar(graphics, font, config, talkers);
 		} else {
-			bounds = NO_BOUNDS;
+			bounds = Bounds.NONE;
 			renderSubtitles(graphics, font, talkers, layout);
 		}
 		animator.endFrame();
@@ -114,31 +112,37 @@ public final class HudPreview {
 				if (speaker.profile == null) {
 					speaker.profile = new TalkerProfile(speaker.uuid, volume, now);
 				} else {
-					speaker.profile.talk(volume, now);
+					speaker.profile.talk(volume, now, fadeMs);
 				}
 			}
 			if (speaker.profile == null) {
 				continue;
 			}
-			float presence = THManager.getDisplayAlpha(speaker.profile, fadeMs, now);
+			float presence = THManager.getPresence(speaker.profile, fadeMs, now);
 			if (!talking && presence <= THManager.MIN_VISIBLE_ALPHA) {
 				speaker.profile = null;
 				continue;
 			}
 			talkers.add(new Talker(speaker.uuid, speaker.profile.getVolume(), presence,
-					THManager.isTalking(speaker.profile, now), speaker.face, speaker.name, null, false));
+					THManager.isTalking(speaker.profile, now), speaker.face, speaker.name));
 		}
 		talkers.sort((first, second) -> Long.compare(firstTalk(first.uuid()), firstTalk(second.uuid())));
 		return talkers;
 	}
 
 	private long firstTalk(UUID uuid) {
+		TalkerProfile profile = profileOf(uuid);
+		return profile == null ? Long.MAX_VALUE : profile.getFirstTalkMs();
+	}
+
+	@Nullable
+	private TalkerProfile profileOf(UUID uuid) {
 		for (Speaker speaker : speakers) {
-			if (speaker.uuid.equals(uuid) && speaker.profile != null) {
-				return speaker.profile.getFirstTalkMs();
+			if (speaker.uuid.equals(uuid)) {
+				return speaker.profile;
 			}
 		}
-		return Long.MAX_VALUE;
+		return null;
 	}
 
 	private static final double[] BAR_YAWS = {-42, -14, 17, 45};
@@ -146,18 +150,11 @@ public final class HudPreview {
 	private void renderBar(GuiGraphics graphics, Font font, LeafyConfig config, List<Talker> talkers) {
 		//? if >=1.21.6 {
 		TalkingBarRenderer.drawBackground(graphics);
-		int dotCenterY = TalkingBarRenderer.dotCenterY(graphics.guiHeight());
-		int faceSize = config.getFaceSize();
 		for (int i = 0; i < talkers.size(); i++) {
 			Talker talker = talkers.get(i);
 			int x = TalkingBarRenderer.markerCenterX(graphics.guiWidth(), BAR_YAWS[i % BAR_YAWS.length]);
-			int size = Math.round(TalkingBarRenderer.DOT_SIZE + (faceSize - TalkingBarRenderer.DOT_SIZE) * talker.presence());
-			FaceRenderer.draw(graphics, config, talker.face(), x, dotCenterY, size, animator.volume(talker), 1f, talker.uuid());
-			if (config.isShowNames() && talker.presence() > 0.6f) {
-				Component name = TalkingOverlayRenderer.ellipsize(font, talker.name(), 90);
-				Draw.text(graphics, font, name, x - font.width(name) / 2,
-						dotCenterY - size / 2 - font.lineHeight - 2 - FaceRenderer.margin(config.getSpeakingAnimation(), size), 0xFFFFFFFF);
-			}
+			TalkingBarRenderer.drawTalker(graphics, font, config, talker, x, talker.presence(), animator.volume(talker),
+					config.getAccentColor().colorFor(talker.uuid()));
 		}
 		//?}
 	}
@@ -186,14 +183,15 @@ public final class HudPreview {
 	}
 
 	public void drawSelection(GuiGraphics graphics) {
-		int left = Math.max(0, bounds[0] - selectionPad);
-		int top = Math.max(0, bounds[1] - selectionPad);
-		int right = Math.min(graphics.guiWidth(), bounds[0] + bounds[2] + selectionPad);
-		int bottom = Math.min(graphics.guiHeight(), bounds[1] + bounds[3] + selectionPad);
-		if (bounds[2] > 0 && bounds[3] > 0) {
-			graphics.fill(left, top, right, bottom, SELECT_FILL);
-			Draw.frame(graphics, left, top, right, bottom, 1, SELECT_COLOR);
+		if (bounds.isEmpty()) {
+			return;
 		}
+		int left = Math.max(0, bounds.x() - selectionPad);
+		int top = Math.max(0, bounds.y() - selectionPad);
+		int right = Math.min(graphics.guiWidth(), bounds.right() + selectionPad);
+		int bottom = Math.min(graphics.guiHeight(), bounds.bottom() + selectionPad);
+		graphics.fill(left, top, right, bottom, SELECT_FILL);
+		Draw.frame(graphics, left, top, right, bottom, 1, SELECT_COLOR);
 	}
 
 	public void drawWarnings(GuiGraphics graphics, Font font, LeafyConfig config, SettingsLayout layout, @Nullable Minecraft minecraft) {

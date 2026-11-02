@@ -21,8 +21,8 @@ public final class SettingsPainter {
 	public static final int SCROLLBAR_WIDTH = 3;
 
 	private final Font font;
-	private final List<int[]> panels = new ArrayList<>();
-	private final List<int[]> rules = new ArrayList<>();
+	private final List<Box> panels = new ArrayList<>();
+	private final List<Box> rules = new ArrayList<>();
 	private final List<Heading> headings = new ArrayList<>();
 	private Heading title;
 	private int clipTop;
@@ -40,11 +40,11 @@ public final class SettingsPainter {
 	}
 
 	public void panel(int left, int top, int right, int bottom) {
-		panels.add(new int[]{left, top, right, bottom});
+		panels.add(new Box(left, top, right, bottom));
 	}
 
 	public void rule(int x, int y, int width) {
-		rules.add(new int[]{x, y, width});
+		rules.add(new Box(x, y, x + width, y + 1));
 	}
 
 	public void heading(Component label, int x, int y) {
@@ -61,17 +61,17 @@ public final class SettingsPainter {
 	}
 
 	public void drawBackdrops(GuiGraphics graphics) {
-		for (int[] panel : panels) {
-			graphics.fill(panel[0], panel[1], panel[2], panel[3], COLOR_BACKDROP);
+		for (Box panel : panels) {
+			graphics.fill(panel.left(), panel.top(), panel.right(), panel.bottom(), COLOR_BACKDROP);
 		}
 	}
 
 	public void drawForeground(GuiGraphics graphics) {
-		for (int[] panel : panels) {
-			Draw.frame(graphics, panel[0], panel[1], panel[2], panel[3], 1, COLOR_BORDER);
+		for (Box panel : panels) {
+			Draw.frame(graphics, panel.left(), panel.top(), panel.right(), panel.bottom(), 1, COLOR_BORDER);
 		}
-		for (int[] rule : rules) {
-			graphics.fill(rule[0], rule[1], rule[0] + rule[2], rule[1] + 1, COLOR_BORDER);
+		for (Box rule : rules) {
+			graphics.fill(rule.left(), rule.top(), rule.right(), rule.bottom(), COLOR_BORDER);
 		}
 		for (Heading heading : headings) {
 			if (heading.y() >= clipTop && heading.y() + font.lineHeight <= clipBottom) {
@@ -83,24 +83,31 @@ public final class SettingsPainter {
 		}
 	}
 
-	public static int @Nullable [] scrollThumb(int top, int bottom, int scroll, int contentHeight) {
+	@Nullable
+	public static Thumb scrollThumb(int top, int bottom, int scroll, int contentHeight) {
 		int view = bottom - top;
 		if (contentHeight <= view) {
 			return null;
 		}
 		int height = Math.max(10, view * view / contentHeight);
-		return new int[]{top + (view - height) * scroll / (contentHeight - view), height};
+		return new Thumb(top + (view - height) * scroll / (contentHeight - view), height);
 	}
 
 	public void drawScrollbar(GuiGraphics graphics, int x, int top, int bottom, int scroll, int contentHeight, boolean active) {
-		int[] thumb = scrollThumb(top, bottom, scroll, contentHeight);
+		Thumb thumb = scrollThumb(top, bottom, scroll, contentHeight);
 		if (thumb == null) {
 			return;
 		}
 		graphics.fill(x, top, x + SCROLLBAR_WIDTH, bottom, COLOR_SCROLL_TRACK);
-		graphics.fill(x, thumb[0], x + SCROLLBAR_WIDTH, thumb[0] + thumb[1], active ? COLOR_SCROLLBAR_ACTIVE : COLOR_SCROLLBAR);
+		graphics.fill(x, thumb.top(), x + SCROLLBAR_WIDTH, thumb.top() + thumb.height(), active ? COLOR_SCROLLBAR_ACTIVE : COLOR_SCROLLBAR);
 	}
 
 	private record Heading(Component label, int x, int y) {
+	}
+
+	private record Box(int left, int top, int right, int bottom) {
+	}
+
+	public record Thumb(int top, int height) {
 	}
 }

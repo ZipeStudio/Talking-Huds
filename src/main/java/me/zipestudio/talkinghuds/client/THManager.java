@@ -1,6 +1,7 @@
 package me.zipestudio.talkinghuds.client;
 
 import me.zipestudio.talkinghuds.client.voice.TalkerProfile;
+import me.zipestudio.talkinghuds.config.LeafyConfig;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -12,8 +13,6 @@ public final class THManager {
 
 	private static final Map<UUID, TalkerProfile> TALKERS = new ConcurrentHashMap<>();
 
-	static final long FADE_IN_MS = 120L;
-	static final double HOLD_FRACTION = 0.4;
 	public static final float MIN_VISIBLE_ALPHA = 0.02f;
 	static final long TALKING_WINDOW_MS = 300L;
 
@@ -21,11 +20,12 @@ public final class THManager {
 	}
 
 	public static void talk(UUID uuid, double volume, long now) {
+		long fadeMs = LeafyConfig.getInstance().getFadeMs();
 		TALKERS.compute(uuid, (key, profile) -> {
 			if (profile == null) {
 				return new TalkerProfile(key, volume, now);
 			}
-			profile.talk(volume, now);
+			profile.talk(volume, now, fadeMs);
 			return profile;
 		});
 	}
@@ -43,19 +43,16 @@ public final class THManager {
 		return TALKERS.isEmpty();
 	}
 
-	public static float getDisplayAlpha(@Nullable TalkerProfile profile, long fadeMs, long now) {
+	public static float getPresence(@Nullable TalkerProfile profile, long fadeMs, long now) {
 		if (profile == null) {
 			return 0f;
 		}
-		long sinceTalk = now - profile.getLastTalkMs();
-		if (sinceTalk >= fadeMs) {
-			return 0f;
+		long talkEnd = profile.getLastTalkMs() + TALKING_WINDOW_MS;
+		if (fadeMs <= 0) {
+			return now < talkEnd ? 1f : 0f;
 		}
-		long hold = (long) (fadeMs * HOLD_FRACTION);
-		float fadeOut = sinceTalk <= hold
-				? 1f
-				: 1f - (float) (sinceTalk - hold) / (float) Math.max(1L, fadeMs - hold);
-		float fadeIn = Math.min(1f, (float) (now - profile.getFirstTalkMs()) / (float) FADE_IN_MS);
+		float fadeIn = (float) (now - profile.getRiseStartMs()) / fadeMs;
+		float fadeOut = (float) (talkEnd + fadeMs - now) / fadeMs;
 		return Math.max(0f, Math.min(1f, Math.min(fadeIn, fadeOut)));
 	}
 
@@ -64,7 +61,7 @@ public final class THManager {
 	}
 
 	public static void cleanup(long fadeMs, long now) {
-		TALKERS.values().removeIf(profile -> now - profile.getLastTalkMs() >= fadeMs);
+		TALKERS.values().removeIf(profile -> now - profile.getLastTalkMs() >= TALKING_WINDOW_MS + fadeMs);
 	}
 
 	public static void forget(UUID uuid) {

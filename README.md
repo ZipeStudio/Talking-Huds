@@ -76,6 +76,7 @@ The screen opens from Mod Menu / the mods list or a keybind (unbound by default)
 
 ### Look
 - **Show Names** — player names under their heads. The List always shows them
+- **Name Length** — longer names are cut to this many characters (16 by default)
 - **Show Yourself** — also show yourself while you talk
 - **Highlight** — a glow and frame around the player head, brighter while they talk
 - **Color** — a fixed color, or **Player Color**: the same as their dot on the Locator Bar

@@ -17,12 +17,14 @@ public final class TalkingOverlayRenderer {
 	private static final TalkerAnimator HUD_ANIMATOR = new TalkerAnimator();
 	private static final int NAME_COLOR = 0xFFFFFF;
 	private static final int QUIET_NAME_COLOR = 0xAAAAAA;
-	private static final int MAX_NAME_WIDTH = 90;
 
 	private TalkingOverlayRenderer() {
 	}
 
 	public static void render(GuiGraphics graphics) {
+		//? if >=1.21.6 {
+		TalkingBarRenderer.renderIfShown(graphics);
+		//?}
 		Minecraft mc = Minecraft.getInstance();
 		LeafyConfig config = LeafyConfig.getInstance();
 		if (!config.isEnableMod() || !config.getDisplayMode().isMovable() || THClient.hideTalkers(mc)) {
@@ -41,10 +43,10 @@ public final class TalkingOverlayRenderer {
 	public static int edge(LeafyConfig config) {
 		return config.getDisplayMode() == DisplayMode.LIST
 				? 0
-				: FaceRenderer.margin(config.getSpeakingAnimation(), config.getFaceSize()) + 2;
+				: FaceRenderer.margin(config.getSpeakingAnimation(), config.getHeadSize()) + 2;
 	}
 
-	public static int[] renderMode(GuiGraphics graphics, Font font, LeafyConfig config, List<Talker> talkers, TalkerAnimator animator) {
+	public static Bounds renderMode(GuiGraphics graphics, Font font, LeafyConfig config, List<Talker> talkers, TalkerAnimator animator) {
 		int shown = Math.min(talkers.size(), config.getMaxTalkers());
 		int overflow = talkers.size() - shown;
 		List<Talker> visible = talkers.subList(0, shown);
@@ -53,12 +55,12 @@ public final class TalkingOverlayRenderer {
 				: renderHeads(graphics, font, config, visible, talkers.subList(shown, talkers.size()), animator);
 	}
 
-	private static int[] renderHeads(GuiGraphics graphics, Font font, LeafyConfig config, List<Talker> talkers,
+	private static Bounds renderHeads(GuiGraphics graphics, Font font, LeafyConfig config, List<Talker> talkers,
 	                                 List<Talker> hidden, TalkerAnimator animator) {
 		HudAnchor anchor = config.getHudAnchor();
 		boolean vertical = config.getDisplayMode() == DisplayMode.HEADS_COLUMN;
 		boolean names = config.isShowNames();
-		int size = config.getFaceSize();
+		int size = config.getHeadSize();
 		int gap = Math.max(5, 3 + 2 * FaceRenderer.margin(config.getSpeakingAnimation(), size));
 		int labelGap = 3 + FaceRenderer.margin(config.getSpeakingAnimation(), size);
 		int count = talkers.size() + (hidden.isEmpty() ? 0 : 1);
@@ -70,7 +72,7 @@ public final class TalkingOverlayRenderer {
 				spans[i] = size;
 				continue;
 			}
-			int nameWidth = names ? font.width(ellipsize(font, talkers.get(i).name(), MAX_NAME_WIDTH)) : 0;
+			int nameWidth = names ? font.width(ellipsize(talkers.get(i).name())) : 0;
 			maxName = Math.max(maxName, nameWidth);
 			spans[i] = vertical ? size : Math.max(size, nameWidth + 2);
 		}
@@ -106,14 +108,14 @@ public final class TalkingOverlayRenderer {
 			FaceRenderer.draw(graphics, config, talker.face(), cx, cy, size, animator.volume(talker), alpha, talker.uuid());
 
 			if (names) {
-				Component name = ellipsize(font, talker.name(), MAX_NAME_WIDTH);
+				Component name = ellipsize(talker.name());
 				int nameW = font.width(name);
 				int nameX = vertical ? (labelsLeft ? faceLeft - gap - nameW : faceLeft + size + gap) : cx - nameW / 2;
 				int nameY = vertical ? cy - font.lineHeight / 2 : faceTop + size + labelGap;
 				drawLabel(graphics, font, config, name, nameX, nameY, talker.talking() ? NAME_COLOR : QUIET_NAME_COLOR, alpha);
 			}
 		}
-		return new int[]{originX, originY, width, height};
+		return new Bounds(originX, originY, width, height);
 	}
 
 	private static final float OVERFLOW_FACE_ALPHA = 0.45f;
@@ -138,18 +140,18 @@ public final class TalkingOverlayRenderer {
 		Draw.text(graphics, font, text, x, y, Draw.argb(alpha, rgb));
 	}
 
-	private static int[] renderList(GuiGraphics graphics, Font font, LeafyConfig config, List<Talker> talkers,
+	private static Bounds renderList(GuiGraphics graphics, Font font, LeafyConfig config, List<Talker> talkers,
 	                                int overflow, TalkerAnimator animator) {
 		HudAnchor anchor = config.getHudAnchor();
 		boolean mirrored = anchor.isRight();
-		int size = config.getFaceSize();
+		int size = config.getHeadSize();
 		int pad = 3;
 		int rowHeight = Math.max(size, font.lineHeight) + 2 + 2 * FaceRenderer.margin(config.getSpeakingAnimation(), size);
 		int speakerWidth = FaceRenderer.SPEAKER_WIDTH;
 
 		int maxName = 0;
 		for (Talker talker : talkers) {
-			maxName = Math.max(maxName, font.width(ellipsize(font, talker.name(), MAX_NAME_WIDTH)));
+			maxName = Math.max(maxName, font.width(ellipsize(talker.name())));
 		}
 		Component more = overflow > 0 ? TalkingHuds.text("list.more", overflow) : null;
 		int facePad = pad + FaceRenderer.margin(config.getSpeakingAnimation(), size) - 1;
@@ -175,29 +177,26 @@ public final class TalkingOverlayRenderer {
 			int faceCenterX = mirrored ? left + rowWidth - facePad - size / 2 : left + facePad + size / 2;
 			FaceRenderer.draw(graphics, config, talker.face(), faceCenterX, centerY, size, volume, alpha, talker.uuid());
 
-			Component name = ellipsize(font, talker.name(), MAX_NAME_WIDTH);
+			Component name = ellipsize(talker.name());
 			int nameX = mirrored ? left + rowWidth - facePad - size - nameGap - font.width(name) : left + facePad + size + nameGap;
 			Draw.text(graphics, font, name, nameX, centerY - font.lineHeight / 2 + 1,
 					Draw.argb(alpha, talker.talking() ? NAME_COLOR : QUIET_NAME_COLOR));
 
 			int speakerX = mirrored ? left + pad : left + rowWidth - pad - speakerWidth;
 			FaceRenderer.drawSpeaker(graphics, speakerX, centerY - FaceRenderer.SPEAKER_HEIGHT / 2,
-					Anim.clamp01(volume / 0.45f), alpha, config.getAccentColor().colorFor(talker.uuid()));
+					Anim.clamp01(volume / FaceRenderer.FULL_VOLUME), alpha, config.getAccentColor().colorFor(talker.uuid()));
 		}
 		if (more != null) {
 			int top = originY + talkers.size() * (rowHeight + 1);
 			graphics.fill(originX, top, originX + rowWidth, top + rowHeight, FaceRenderer.backgroundArgb(config, 1f));
 			Draw.text(graphics, font, more, originX + (rowWidth - font.width(more)) / 2, top + (rowHeight - font.lineHeight) / 2 + 1, 0xFFAAAAAA);
 		}
-		return new int[]{originX, originY, rowWidth, height};
+		return new Bounds(originX, originY, rowWidth, height);
 	}
 
-	public static Component ellipsize(Font font, Component name, int maxWidth) {
+	public static Component ellipsize(Component name) {
 		String text = name.getString();
-		if (font.width(text) <= maxWidth) {
-			return name;
-		}
-		String ellipsis = "…";
-		return Component.literal(font.plainSubstrByWidth(text, maxWidth - font.width(ellipsis)) + ellipsis);
+		int length = LeafyConfig.getInstance().getNameLength();
+		return text.length() <= length ? name : Component.literal(text.substring(0, length) + "…");
 	}
 }

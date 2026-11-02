@@ -1,26 +1,26 @@
 package me.zipestudio.talkinghuds.client.render;
 
+import me.zipestudio.talkinghuds.TalkingHuds;
 import me.zipestudio.talkinghuds.config.LeafyConfig;
 import me.zipestudio.talkinghuds.config.option.SpeakingAnimation;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.Identifier;
 
 import java.util.UUID;
 
 public final class FaceRenderer {
 
-	private static final float FULL_VOLUME = 0.45f;
+	public static final float FULL_VOLUME = 0.45f;
+	public static final float SILENT = 0.02f;
 	private static final float PULSE_GROWTH = 0.5f;
 	private static final long RING_PERIOD_MS = 900L;
 
-	private static final String[] SPEAKER = {
-			"...B.....",
-			"..BB...2.",
-			"BBBB.1..2",
-			"BBBB.1..2",
-			"BBBB.1..2",
-			"..BB...2.",
-			"...B.....",
+	private static final Identifier SPEAKER = TalkingHuds.id("speaker");
+	private static final Identifier[] SPEAKER_WAVES = {
+			TalkingHuds.id("speaker_waves_1"),
+			TalkingHuds.id("speaker_waves_2"),
 	};
+
 	public static final int SPEAKER_WIDTH = 9;
 	public static final int SPEAKER_HEIGHT = 7;
 
@@ -43,39 +43,39 @@ public final class FaceRenderer {
 
 	public static void draw(GuiGraphics graphics, LeafyConfig config, FaceTexture face, int centerX, int centerY,
 	                        int size, float volume, float alpha, UUID player, int rgb) {
+		draw(graphics, config, face, centerX, centerY, size, volume, alpha, player, rgb, false);
+	}
+
+	public static void draw(GuiGraphics graphics, LeafyConfig config, FaceTexture face, int centerX, int centerY,
+	                        int size, float volume, float alpha, UUID player, int rgb, boolean steadyHighlight) {
 		if (size <= 0 || alpha <= 0.01f) {
 			return;
 		}
 		SpeakingAnimation animation = config.getSpeakingAnimation();
 		int seed = player.hashCode() & 0xFFFF;
 		float strength = Anim.clamp01(volume / FULL_VOLUME);
-		long time = Anim.millis();
-		double phase = time + seed * 397L;
+		double phase = Anim.millis() + seed * 397L;
 
-		int drawSize = size;
 		int dy = animation == SpeakingAnimation.BOUNCE
 				? -Math.round(size * 0.25f * strength * (float) Math.abs(Math.sin(phase / 130.0)))
 				: 0;
-		int x = centerX - drawSize / 2;
-		int y = centerY - drawSize / 2 + dy;
+		int x = centerX - size / 2;
+		int y = centerY - size / 2 + dy;
 
 		if (animation == SpeakingAnimation.RINGS) {
-			drawRings(graphics, x, y, drawSize, strength, alpha, rgb, phase, margin(animation, size));
+			drawRings(graphics, x, y, size, strength, alpha, rgb, phase, margin(animation, size));
 		}
 		float scale = animation == SpeakingAnimation.PULSE ? 1f + PULSE_GROWTH * volume : 1f;
 		boolean scaled = scale > 1.001f;
 		if (scaled) {
 			Draw.pushScale(graphics, centerX, centerY, scale);
-			x = -drawSize / 2;
-			y = -drawSize / 2;
+			x = -size / 2;
+			y = -size / 2;
 		}
+		face.draw(graphics, x, y, size, alpha);
 		if (config.isHighlight()) {
-			graphics.fill(x - 2, y - 2, x + drawSize + 2, y + drawSize + 2, Draw.argb((0.12f + 0.5f * strength) * alpha, rgb));
-		}
-		graphics.fill(x - 1, y - 1, x + drawSize + 1, y + drawSize + 1, Draw.argb(0.5f * alpha, 0x000000));
-		face.draw(graphics, x, y, drawSize, alpha);
-		if (config.isHighlight() && strength > 0.02f) {
-			Draw.frame(graphics, x - 2, y - 2, x + drawSize + 2, y + drawSize + 2, 1, Draw.argb(Math.min(1f, strength * 3f) * alpha, rgb));
+			float glow = steadyHighlight ? 1f : 0.3f + 0.7f * Math.min(1f, strength * 3f);
+			Draw.frame(graphics, x - 1, y - 1, x + size + 1, y + size + 1, 1, Draw.argb(glow * alpha, rgb));
 		}
 		if (scaled) {
 			Draw.popScale(graphics);
@@ -88,7 +88,7 @@ public final class FaceRenderer {
 
 	private static void drawRings(GuiGraphics graphics, int x, int y, int size, float strength, float alpha, int rgb,
 	                              double phase, int room) {
-		if (strength <= 0.02f) {
+		if (strength <= SILENT) {
 			return;
 		}
 		for (int i = 0; i < 2; i++) {
@@ -99,25 +99,18 @@ public final class FaceRenderer {
 		}
 	}
 
-
-
 	public static void drawSpeaker(GuiGraphics graphics, int x, int y, float strength, float alpha, int rgb) {
-		boolean talking = strength > 0.02f;
+		boolean talking = strength > SILENT;
 		int body = talking ? Draw.argb(alpha, 0xFFFFFF) : Draw.argb(0.55f * alpha, 0xA0A0A0);
-		int wave = Draw.argb(alpha, rgb);
-		int waves = !talking ? 0 : strength < 0.45f ? 1 : 2;
 		int shadow = Draw.argb(0.6f * alpha, 0x000000);
-		for (int pass = 0; pass < 2; pass++) {
-			for (int row = 0; row < SPEAKER.length; row++) {
-				for (int col = 0; col < SPEAKER_WIDTH; col++) {
-					char c = SPEAKER[row].charAt(col);
-					if (c == 'B' || (c == '1' && waves >= 1) || (c == '2' && waves >= 2)) {
-						int px = x + col + (pass == 0 ? 1 : 0);
-						int py = y + row + (pass == 0 ? 1 : 0);
-						graphics.fill(px, py, px + 1, py + 1, pass == 0 ? shadow : (c == 'B' ? body : wave));
-					}
-				}
-			}
+		Identifier waves = talking ? SPEAKER_WAVES[strength < FULL_VOLUME ? 0 : 1] : null;
+		Draw.sprite(graphics, SPEAKER, x + 1, y + 1, SPEAKER_WIDTH, SPEAKER_HEIGHT, shadow);
+		if (waves != null) {
+			Draw.sprite(graphics, waves, x + 1, y + 1, SPEAKER_WIDTH, SPEAKER_HEIGHT, shadow);
+		}
+		Draw.sprite(graphics, SPEAKER, x, y, SPEAKER_WIDTH, SPEAKER_HEIGHT, body);
+		if (waves != null) {
+			Draw.sprite(graphics, waves, x, y, SPEAKER_WIDTH, SPEAKER_HEIGHT, Draw.argb(alpha, rgb));
 		}
 	}
 }

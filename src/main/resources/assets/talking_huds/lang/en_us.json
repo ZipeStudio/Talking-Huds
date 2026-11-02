@@ -21,8 +21,8 @@
   "${mod_id}.settings.position": "Position",
   "${mod_id}.settings.position.custom": "Custom",
   "${mod_id}.settings.position.tooltip": "Screen edge or corner to put the HUD in. Dragging the HUD moves it freely.",
-  "${mod_id}.settings.face_size": "Head Size",
-  "${mod_id}.settings.face_size.tooltip": "Size of the player heads in pixels. Scrolling over the preview changes it too.",
+  "${mod_id}.settings.head_size": "Head Size",
+  "${mod_id}.settings.head_size.tooltip": "Size of the player heads in pixels. Scrolling over the preview changes it too.",
   "${mod_id}.settings.max_shown": "Max Players Shown",
   "${mod_id}.settings.max_shown.tooltip": "How many players are shown at once. The rest are summed up as +N.",
 
@@ -30,6 +30,8 @@
   "${mod_id}.settings.show_self.tooltip": "Also show yourself while you talk.",
   "${mod_id}.settings.show_names": "Show Names",
   "${mod_id}.settings.show_names.tooltip": "Show player names under their heads. The List always shows names.",
+  "${mod_id}.settings.name_length": "Name Length",
+  "${mod_id}.settings.name_length.tooltip": "Longer names are cut to this many characters.",
   "${mod_id}.settings.fade_time": "Fading Time",
   "${mod_id}.settings.fade_time.tooltip": "How long a player stays on the HUD, fading out, after they stop talking.",
 
@@ -51,15 +53,15 @@
   "${mod_id}.settings.hint.reset": "Right-click to reset to default",
   "${mod_id}.settings.hint.move": "§6§lEditing the HUD\n§6• §fDrag the HUD §7move it\n§6• §fScroll over the preview §7resize\n§6• §fArrow keys §7nudge by a pixel\n§6• §fRight-click §7reset the HUD or an option",
   "${mod_id}.settings.hint.subtitles": "§6§lSubtitles\n§6• §7Talkers appear in Minecraft's subtitles, bottom right\n§6• §fRight-click §7reset an option",
-  "${mod_id}.settings.hint.bar": "§6§lLocator Bar\n§6• §7Players appear on the Locator Bar\n§6• §fScroll over the preview §7resize\n§6• §fRight-click §7reset an option",
+  "${mod_id}.settings.hint.locator_bar": "§6§lLocator Bar\n§6• §7Players appear on the Locator Bar\n§6• §fScroll over the preview §7resize\n§6• §fRight-click §7reset an option",
   "${mod_id}.settings.subtitles_on": "Turn On Subtitles",
   "${mod_id}.settings.hint.subtitles_off": "Minecraft subtitles are off",
 
-  "${mod_id}.display.heads": "Faces in a Row",
+  "${mod_id}.display.heads_row": "Faces in a Row",
   "${mod_id}.display.heads_column": "Faces in a Column",
   "${mod_id}.display.list": "List",
   "${mod_id}.display.subtitles": "Subtitles",
-  "${mod_id}.display.bar": "Locator Bar",
+  "${mod_id}.display.locator_bar": "Locator Bar",
 
   "${mod_id}.anchor.top_left": "Top Left",
   "${mod_id}.anchor.top_center": "Top",

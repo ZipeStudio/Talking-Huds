@@ -21,8 +21,8 @@
   "${mod_id}.settings.position": "Позиция",
   "${mod_id}.settings.position.custom": "своя",
   "${mod_id}.settings.position.tooltip": "Край или угол экрана, куда поставить HUD. Перетаскиванием HUD двигается свободно.",
-  "${mod_id}.settings.face_size": "Размер голов",
-  "${mod_id}.settings.face_size.tooltip": "Размер голов игроков в пикселях. Колёсико над превью тоже меняет его.",
+  "${mod_id}.settings.head_size": "Размер голов",
+  "${mod_id}.settings.head_size.tooltip": "Размер голов игроков в пикселях. Колёсико над превью тоже меняет его.",
   "${mod_id}.settings.max_shown": "Макс. игроков на экране",
   "${mod_id}.settings.max_shown.tooltip": "Сколько игроков показывать одновременно. Остальные сворачиваются в +N.",
 
@@ -30,6 +30,8 @@
   "${mod_id}.settings.show_self.tooltip": "Показывать и себя, когда вы говорите.",
   "${mod_id}.settings.show_names": "Ники",
   "${mod_id}.settings.show_names.tooltip": "Ники под головами игроков. В режиме Список ники показываются всегда.",
+  "${mod_id}.settings.name_length": "Длина ников",
+  "${mod_id}.settings.name_length.tooltip": "Ники длиннее обрезаются до этого числа символов.",
   "${mod_id}.settings.fade_time": "Время исчезания",
   "${mod_id}.settings.fade_time.tooltip": "Сколько игрок остаётся на HUD, плавно исчезая, после того как замолчал.",
 
@@ -51,15 +53,15 @@
   "${mod_id}.settings.hint.reset": "ПКМ — сбросить по умолчанию",
   "${mod_id}.settings.hint.move": "§6§lНастройка HUD\n§6• §fТяните HUD §7переместить\n§6• §fКолёсико над превью §7размер\n§6• §fСтрелки §7сдвиг на пиксель\n§6• §fПКМ §7сброс HUD или настройки",
   "${mod_id}.settings.hint.subtitles": "§6§lСубтитры\n§6• §7Говорящие появляются в субтитрах Minecraft, справа внизу\n§6• §fПКМ §7сброс настройки",
-  "${mod_id}.settings.hint.bar": "§6§lЛокатор-бар\n§6• §7Игроки появляются на локатор-баре\n§6• §fКолёсико над превью §7размер\n§6• §fПКМ §7сброс настройки",
+  "${mod_id}.settings.hint.locator_bar": "§6§lЛокатор-бар\n§6• §7Игроки появляются на локатор-баре\n§6• §fКолёсико над превью §7размер\n§6• §fПКМ §7сброс настройки",
   "${mod_id}.settings.subtitles_on": "Включить субтитры",
   "${mod_id}.settings.hint.subtitles_off": "Субтитры Minecraft выключены",
 
-  "${mod_id}.display.heads": "Лица в ряд",
+  "${mod_id}.display.heads_row": "Лица в ряд",
   "${mod_id}.display.heads_column": "Лица в столбик",
   "${mod_id}.display.list": "Список",
   "${mod_id}.display.subtitles": "Субтитры",
-  "${mod_id}.display.bar": "Локатор-бар",
+  "${mod_id}.display.locator_bar": "Локатор-бар",
 
   "${mod_id}.anchor.top_left": "Сверху слева",
   "${mod_id}.anchor.top_center": "Сверху",

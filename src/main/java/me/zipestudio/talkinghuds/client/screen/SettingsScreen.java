@@ -6,6 +6,7 @@ import me.zipestudio.talkinghuds.TalkingHuds;
 //? if >=1.21.6 {
 import me.zipestudio.talkinghuds.client.render.TalkingBarRenderer;
 //?}
+import me.zipestudio.talkinghuds.client.render.Bounds;
 import me.zipestudio.talkinghuds.client.render.FaceRenderer;
 import me.zipestudio.talkinghuds.client.render.TalkingOverlayRenderer;
 import me.zipestudio.talkinghuds.client.render.VanillaSubtitles;
@@ -25,6 +26,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
 import java.util.function.BooleanSupplier;
 
 public class SettingsScreen extends Screen {
@@ -100,18 +102,19 @@ public class SettingsScreen extends Screen {
 		widgets.choice(column.full(), SettingOptions.DISPLAY_MODE);
 		widgets.choice(column.full(), SettingOptions.ANIMATION, this::showsFaces);
 		widgets.choice(column.full(), SettingOptions.POSITION, this::movable, this::checkSideAfterFrame);
-		widgets.slider(column.full(), SettingOptions.FACE_SIZE, this::showsFaces);
-		widgets.slider(column.full(), SettingOptions.MAX_SHOWN, this::movable);
 		widgets.slider(column.full(), SettingOptions.FADE);
+		widgets.slider(column.full(), SettingOptions.MAX_SHOWN, this::movable);
+		widgets.slider(column.full(), SettingOptions.BACKGROUND, this::backgroundApplies);
 	}
 
 	private void buildLook(Column column) {
 		column.heading(TalkingHuds.text("settings.section.look"));
-		widgets.toggle(column.full(), SettingOptions.SHOW_NAMES, this::namesApply);
-		widgets.toggle(column.full(), SettingOptions.SHOW_SELF);
 		widgets.toggle(column.full(), SettingOptions.HIGHLIGHT, this::showsFaces);
 		widgets.choice(column.full(), SettingOptions.COLOR, this::showsFaces);
-		widgets.slider(column.full(), SettingOptions.BACKGROUND, this::backgroundApplies);
+		widgets.toggle(column.full(), SettingOptions.SHOW_SELF);
+		widgets.toggle(column.full(), SettingOptions.SHOW_NAMES, this::namesApply);
+		widgets.slider(column.full(), SettingOptions.NAME_LENGTH);
+		widgets.slider(column.full(), SettingOptions.HEAD_SIZE, this::showsFaces);
 	}
 
 	private void buildHelp() {
@@ -121,7 +124,7 @@ public class SettingsScreen extends Screen {
 	}
 
 	private void refreshHelp() {
-		String key = movable() ? "settings.hint.move" : "settings.hint." + mode().name().toLowerCase(java.util.Locale.ROOT);
+		String key = movable() ? "settings.hint.move" : "settings.hint." + mode().name().toLowerCase(Locale.ROOT);
 		SettingsWidgets.tip(helpButton, TalkingHuds.text(key), 0);
 	}
 
@@ -144,7 +147,7 @@ public class SettingsScreen extends Screen {
 	}
 
 	private boolean namesApply() {
-		return mode().isFaces() || mode() == DisplayMode.BAR;
+		return mode().isHeads() || mode() == DisplayMode.LOCATOR_BAR;
 	}
 
 	private boolean backgroundApplies() {
@@ -168,10 +171,10 @@ public class SettingsScreen extends Screen {
 	private int panelBottom() {
 		int bottom = this.height - SettingsLayout.EDGE;
 		//? if >=1.21.6 {
-		if (mode() == DisplayMode.BAR) {
+		if (mode() == DisplayMode.LOCATOR_BAR) {
 			int barLeft = TalkingBarRenderer.barLeft(this.width);
 			if (layout.panelLeft < barLeft + TalkingBarRenderer.BAR_WIDTH && layout.panelRight > barLeft) {
-				int size = config.getFaceSize();
+				int size = config.getHeadSize();
 				int above = size / 2 + FaceRenderer.margin(config.getSpeakingAnimation(), size)
 						+ (config.isShowNames() ? this.font.lineHeight + 2 : 2);
 				int top = Math.min(TalkingBarRenderer.barTop(this.height), TalkingBarRenderer.dotCenterY(this.height) - above);
@@ -271,9 +274,9 @@ public class SettingsScreen extends Screen {
 	}
 
 	private boolean hudUnderSidebar() {
-		int[] bounds = preview.bounds();
-		return bounds[2] > 0 && bounds[0] < layout.panelRight && bounds[0] + bounds[2] > layout.panelLeft
-				&& bounds[1] < layout.panelBottom && bounds[1] + bounds[3] > layout.panelTop;
+		Bounds bounds = preview.bounds();
+		return !bounds.isEmpty() && bounds.x() < layout.panelRight && bounds.right() > layout.panelLeft
+				&& bounds.y() < layout.panelBottom && bounds.bottom() > layout.panelTop;
 	}
 
 	private boolean handleClick(double x, double y, int button) {
@@ -302,11 +305,11 @@ public class SettingsScreen extends Screen {
 		if (button != InputConstants.MOUSE_BUTTON_LEFT || !movable() || !preview.overHud(x, y)) {
 			return false;
 		}
-		int[] bounds = preview.bounds();
+		Bounds bounds = preview.bounds();
 		setFocused(null);
 		draggingHud = true;
-		grabX = (int) Math.round(x) - bounds[0];
-		grabY = (int) Math.round(y) - bounds[1];
+		grabX = (int) Math.round(x) - bounds.x();
+		grabY = (int) Math.round(y) - bounds.y();
 		preview.setFrozen(true);
 		refreshWidgets();
 		return true;
@@ -325,9 +328,9 @@ public class SettingsScreen extends Screen {
 		if (!overScrollbar(x, y)) {
 			return false;
 		}
-		int[] thumb = SettingsPainter.scrollThumb(layout.contentTop, layout.contentBottom, scroll, contentHeight);
-		boolean onThumb = y >= thumb[0] && y < thumb[0] + thumb[1];
-		scrollGrab = onThumb ? (int) y - thumb[0] : thumb[1] / 2;
+		SettingsPainter.Thumb thumb = SettingsPainter.scrollThumb(layout.contentTop, layout.contentBottom, scroll, contentHeight);
+		boolean onThumb = y >= thumb.top() && y < thumb.top() + thumb.height();
+		scrollGrab = onThumb ? (int) y - thumb.top() : thumb.height() / 2;
 		draggingScrollbar = true;
 		setFocused(null);
 		dragScrollbar(y);
@@ -335,11 +338,11 @@ public class SettingsScreen extends Screen {
 	}
 
 	private void dragScrollbar(double y) {
-		int[] thumb = SettingsPainter.scrollThumb(layout.contentTop, layout.contentBottom, scroll, contentHeight);
+		SettingsPainter.Thumb thumb = SettingsPainter.scrollThumb(layout.contentTop, layout.contentBottom, scroll, contentHeight);
 		if (thumb == null) {
 			return;
 		}
-		int track = layout.viewportHeight() - thumb[1];
+		int track = layout.viewportHeight() - thumb.height();
 		int thumbTop = Mth.clamp((int) y - scrollGrab - layout.contentTop, 0, track);
 		int target = track <= 0 ? 0 : thumbTop * (contentHeight - layout.viewportHeight()) / track;
 		if (target != scroll) {
@@ -390,11 +393,11 @@ public class SettingsScreen extends Screen {
 	}
 
 	private boolean fitsBesideOtherSide() {
-		int[] bounds = preview.bounds();
+		Bounds bounds = preview.bounds();
 		int otherLeft = layout.sidebarLeft
 				? this.width - SettingsLayout.EDGE - layout.panelWidth()
 				: SettingsLayout.EDGE;
-		return bounds[0] >= otherLeft + layout.panelWidth() || bounds[0] + bounds[2] <= otherLeft;
+		return bounds.x() >= otherLeft + layout.panelWidth() || bounds.right() <= otherLeft;
 	}
 
 	private boolean handleDrag(double x, double y) {
@@ -410,9 +413,9 @@ public class SettingsScreen extends Screen {
 	}
 
 	private void moveHudTo(int x, int y) {
-		int[] bounds = preview.bounds();
-		int width = bounds[2];
-		int height = bounds[3];
+		Bounds bounds = preview.bounds();
+		int width = bounds.width();
+		int height = bounds.height();
 		int edge = TalkingOverlayRenderer.edge(config);
 		int left = HudAnchor.clamp(x, edge, this.width - width - edge);
 		int top = HudAnchor.clamp(y, edge, this.height - height - edge);
@@ -443,7 +446,7 @@ public class SettingsScreen extends Screen {
 		if (!showsFaces()) {
 			return false;
 		}
-		SettingOptions.FACE_SIZE.set(config, config.getFaceSize() + Math.signum(amount));
+		SettingOptions.HEAD_SIZE.set(config, config.getHeadSize() + Math.signum(amount));
 		widgets.syncAll();
 		return true;
 	}
@@ -458,11 +461,11 @@ public class SettingsScreen extends Screen {
 		if (dx == 0 && dy == 0) {
 			return false;
 		}
-		int[] bounds = preview.bounds();
-		if (getFocused() != null || !movable() || bounds[2] <= 0) {
+		Bounds bounds = preview.bounds();
+		if (getFocused() != null || !movable() || bounds.isEmpty()) {
 			return false;
 		}
-		moveHudTo(bounds[0] + dx, bounds[1] + dy);
+		moveHudTo(bounds.x() + dx, bounds.y() + dy);
 		return true;
 	}
 

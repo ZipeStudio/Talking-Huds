@@ -31,8 +31,8 @@ public final class SettingOptions {
 				config.setOffsetY(0);
 			}, 3, SettingOptions::drawPosition,
 			config -> config.getOffsetX() != 0 || config.getOffsetY() != 0 ? TalkingHuds.text("settings.position.custom") : null);
-	public static final Slider FACE_SIZE = new Slider("face_size", LeafyConfig.FACE_SIZE_MIN, LeafyConfig.FACE_SIZE_MAX, 1,
-			value -> (int) value + " px", LeafyConfig::getFaceSize, (config, value) -> config.setFaceSize((int) value));
+	public static final Slider HEAD_SIZE = new Slider("head_size", LeafyConfig.HEAD_SIZE_MIN, LeafyConfig.HEAD_SIZE_MAX, 1,
+			value -> (int) value + " px", LeafyConfig::getHeadSize, (config, value) -> config.setHeadSize((int) value));
 	public static final Slider MAX_SHOWN = new Slider("max_shown", LeafyConfig.MAX_TALKERS_MIN, LeafyConfig.MAX_TALKERS_MAX, 1,
 			value -> String.valueOf((int) value), LeafyConfig::getMaxTalkers, (config, value) -> config.setMaxTalkers((int) value));
 
@@ -40,6 +40,8 @@ public final class SettingOptions {
 			new Toggle("show_self", LeafyConfig::isShowSelf, LeafyConfig::setShowSelf);
 	public static final Toggle SHOW_NAMES =
 			new Toggle("show_names", LeafyConfig::isShowNames, LeafyConfig::setShowNames);
+	public static final Slider NAME_LENGTH = new Slider("name_length", LeafyConfig.NAME_LENGTH_MIN, LeafyConfig.NAME_LENGTH_MAX, 1,
+			value -> String.valueOf((int) value), LeafyConfig::getNameLength, (config, value) -> config.setNameLength((int) value));
 	public static final Slider FADE = new Slider("fade_time", LeafyConfig.FADE_MIN, LeafyConfig.FADE_MAX, 0.1,
 			value -> String.format("%.1f s", value), LeafyConfig::getFadeSeconds, LeafyConfig::setFadeSeconds);
 

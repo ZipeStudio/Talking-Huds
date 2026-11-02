@@ -3,6 +3,7 @@ package me.zipestudio.talkinghuds.client.render;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 
 public final class Draw {
@@ -71,6 +72,25 @@ public final class Draw {
 		graphics.pose().popMatrix();
 		//?} else {
 		/*graphics.pose().popPose();
+		*///?}
+	}
+
+	public static void sprite(GuiGraphics graphics, Identifier sprite, int x, int y, int width, int height, int argb) {
+		//? if >=1.21.6 {
+		graphics.blitSprite(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, sprite, x, y, width, height, argb);
+		//?} else {
+		/*com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+		com.mojang.blaze3d.systems.RenderSystem.setShaderColor((argb >> 16 & 0xFF) / 255f, (argb >> 8 & 0xFF) / 255f,
+				(argb & 0xFF) / 255f, (argb >>> 24) / 255f);
+		*///?}
+		//? if >=1.20.2 && <1.21.6 {
+		/*graphics.blitSprite(sprite, x, y, width, height);
+		*///?} elif <1.20.2 {
+		/*graphics.blit(new Identifier(sprite.getNamespace(), "textures/gui/sprites/" + sprite.getPath() + ".png"),
+				x, y, 0, 0, width, height, width, height);
+		*///?}
+		//? if <1.21.6 {
+		/*com.mojang.blaze3d.systems.RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 		*///?}
 	}
 

@@ -17,8 +17,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.waypoints.TrackedWaypoint;
 
 import java.util.UUID;
+
+import org.jetbrains.annotations.Nullable;
 
 public final class TalkingBarRenderer {
 
@@ -55,10 +58,38 @@ public final class TalkingBarRenderer {
 				barLeft(graphics.guiWidth()), barTop(graphics.guiHeight()), BAR_WIDTH, BAR_HEIGHT);
 	}
 
-	public static void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	public static boolean coversWaypoint(TrackedWaypoint waypoint) {
 		Minecraft mc = Minecraft.getInstance();
 		LeafyConfig config = LeafyConfig.getInstance();
-		if (!config.isEnableMod() || config.getDisplayMode() != DisplayMode.BAR) {
+		UUID uuid = waypoint.id().left().orElse(null);
+		Entity cameraEntity = mc.getCameraEntity();
+		if (uuid == null || mc.level == null || cameraEntity == null || uuid.equals(cameraEntity.getUUID())
+				|| !config.isEnableMod() || config.getDisplayMode() != DisplayMode.LOCATOR_BAR || THClient.hideTalkers(mc)) {
+			return false;
+		}
+		float presence = THManager.getPresence(THManager.getProfile(uuid), config.getFadeMs(), System.currentTimeMillis());
+		return presence > THManager.MIN_VISIBLE_ALPHA && mc.level.getPlayerByUUID(uuid) instanceof AbstractClientPlayer;
+	}
+
+	@Nullable
+	private static DeltaTracker shownThisFrame;
+
+	public static void markShown(DeltaTracker deltaTracker) {
+		shownThisFrame = deltaTracker;
+	}
+
+	public static void renderIfShown(GuiGraphics graphics) {
+		DeltaTracker deltaTracker = shownThisFrame;
+		shownThisFrame = null;
+		if (deltaTracker != null) {
+			render(graphics, deltaTracker);
+		}
+	}
+
+	private static void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+		Minecraft mc = Minecraft.getInstance();
+		LeafyConfig config = LeafyConfig.getInstance();
+		if (!config.isEnableMod() || config.getDisplayMode() != DisplayMode.LOCATOR_BAR) {
 			return;
 		}
 		Entity cameraEntity = mc.getCameraEntity();
@@ -79,8 +110,6 @@ public final class TalkingBarRenderer {
 
 		long now = System.currentTimeMillis();
 		long fadeMs = config.getFadeMs();
-		int dotCenterY = dotCenterY(graphics.guiHeight());
-		int faceSize = config.getFaceSize();
 		Font font = mc.font;
 		UUID selfUuid = cameraEntity.getUUID();
 
@@ -91,7 +120,7 @@ public final class TalkingBarRenderer {
 				return;
 			}
 			TalkerProfile profile = THManager.getProfile(uuid);
-			float presence = THManager.getDisplayAlpha(profile, fadeMs, now);
+			float presence = THManager.getPresence(profile, fadeMs, now);
 			if (profile == null || presence <= THManager.MIN_VISIBLE_ALPHA) {
 				return;
 			}
@@ -106,22 +135,32 @@ public final class TalkingBarRenderer {
 			}
 
 			Talker talker = new Talker(uuid, profile.getVolume(), presence, THManager.isTalking(profile, now),
-					FaceTexture.of(player), player.getName(), player.position(), false);
-			int markerCenterX = markerCenterX(graphics.guiWidth(), yaw);
-			int size = Math.round(DOT_SIZE + (faceSize - DOT_SIZE) * presence);
+					FaceTexture.of(player), player.getName());
 			int rgb = config.getAccentColor() == AccentColor.PLAYER
 					? waypoint.icon().color.map(color -> color & 0xFFFFFF).orElseGet(() -> PlayerColors.locatorColor(uuid))
 					: config.getAccentColor().colorFor(uuid);
-			FaceRenderer.draw(graphics, config, talker.face(), markerCenterX, dotCenterY, size, BAR_ANIMATOR.volume(talker), 1f,
-					uuid, rgb);
-
-			if (config.isShowNames() && presence > 0.6f) {
-				Component name = TalkingOverlayRenderer.ellipsize(font, player.getName(), 90);
-				Draw.text(graphics, font, name, markerCenterX - font.width(name) / 2,
-						dotCenterY - size / 2 - font.lineHeight - 2 - FaceRenderer.margin(config.getSpeakingAnimation(), size), 0xFFFFFFFF);
-			}
+			drawTalker(graphics, font, config, talker, markerCenterX(graphics.guiWidth(), yaw), presence, BAR_ANIMATOR.volume(talker), rgb);
 		});
 		BAR_ANIMATOR.endFrame();
+	}
+
+	public static void drawTalker(GuiGraphics graphics, Font font, LeafyConfig config, Talker talker, int markerCenterX,
+	                              float grow, float volume, int rgb) {
+		int dotCenterY = dotCenterY(graphics.guiHeight());
+		int headSize = config.getHeadSize();
+		float smallest = DOT_SIZE / (headSize + 2f);
+		float scale = smallest + (1f - smallest) * grow;
+		float size = headSize * scale;
+		float pivotShift = 0.5f - (headSize % 2) * 0.5f;
+		Draw.pushScale(graphics, markerCenterX + pivotShift, dotCenterY + pivotShift, scale);
+		FaceRenderer.draw(graphics, config, talker.face(), 0, 0, headSize, volume, 1f, talker.uuid(), rgb, true);
+		Draw.popScale(graphics);
+
+		if (config.isShowNames() && grow > 0f) {
+			Component name = TalkingOverlayRenderer.ellipsize(talker.name());
+			int top = Math.round(dotCenterY - size / 2) - FaceRenderer.margin(config.getSpeakingAnimation(), Math.round(size));
+			Draw.text(graphics, font, name, markerCenterX - font.width(name) / 2, top - font.lineHeight - 2, Draw.argb(grow, 0xFFFFFF));
+		}
 	}
 }
 //?}
