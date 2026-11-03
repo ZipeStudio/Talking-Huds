@@ -53,13 +53,6 @@
 ### Subtitles
 <img src="https://github.com/ZipeStudio/talking-huds/blob/master/assets/subtitles.webp?raw=true" width="100%" alt="subtitles">
 
-!["Compatibility" Title](https://github.com/ZipeStudio/Vault/blob/main/design/mods/main/ZScompatible.png?raw=true)
-
-### 🎙️ Voice Chat Support
-Works with both voice mods, even at the same time. Their own talking icons on the HUD are replaced.
-- **[Plasmo Voice](https://modrinth.com/mod/plasmo-voice)**
-- **[Simple Voice Chat](https://modrinth.com/mod/simple-voice-chat)**
-
 !["Configurable" Title](https://github.com/ZipeStudio/Vault/blob/main/design/mods/main/ZSconfigurable.png?raw=true)
 
 <img src="https://github.com/ZipeStudio/talking-huds/blob/master/assets/config.webp?raw=true" width="100%" alt="config">
