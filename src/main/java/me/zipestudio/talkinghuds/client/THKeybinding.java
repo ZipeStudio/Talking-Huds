@@ -17,7 +17,7 @@ public final class THKeybinding {
 	*///?}
 
 	public static final KeyMapping OPEN_SETTINGS = new KeyMapping(
-			TalkingHuds.MOD_ID + ".keybinding.modSettings",
+			TalkingHuds.MOD_ID + ".keybinding.settings",
 			InputConstants.UNKNOWN.getValue(),
 			CATEGORY
 	);

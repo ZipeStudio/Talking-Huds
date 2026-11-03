@@ -72,9 +72,9 @@ public final class VanillaSubtitles {
 
 	private static SubtitleOverlay overlay(Minecraft mc) {
 		//? if >=26.2 {
-		/*return ((SubtitleOverlayHolder) mc.gui.hud).talking_huds$getSubtitleOverlay();
-		*///?} else {
-		return ((SubtitleOverlayHolder) mc.gui).talking_huds$getSubtitleOverlay();
-		//?}
+		return ((SubtitleOverlayHolder) mc.gui.hud).talking_huds$getSubtitleOverlay();
+		//?} else {
+		/*return ((SubtitleOverlayHolder) mc.gui).talking_huds$getSubtitleOverlay();
+		*///?}
 	}
 }

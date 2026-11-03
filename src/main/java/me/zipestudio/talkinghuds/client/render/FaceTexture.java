@@ -1,6 +1,6 @@
 package me.zipestudio.talkinghuds.client.render;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.world.entity.player.PlayerModelPart;
@@ -51,11 +51,11 @@ public final class FaceTexture {
 	}
 	*///?}
 
-	public void draw(GuiGraphics graphics, int x, int y, int size) {
+	public void draw(GuiGraphicsExtractor graphics, int x, int y, int size) {
 		draw(graphics, x, y, size, 1f);
 	}
 
-	public void draw(GuiGraphics graphics, int x, int y, int size, float alpha) {
+	public void draw(GuiGraphicsExtractor graphics, int x, int y, int size, float alpha) {
 		//? if >=1.21.9 {
 		net.minecraft.resources.Identifier texture = this.skin.body().texturePath();
 		//?} elif >=1.20.2 {
@@ -64,11 +64,11 @@ public final class FaceTexture {
 		/*Identifier texture = this.skin;
 		*///?}
 		//? if >=26.1 {
-		/*net.minecraft.client.gui.components.PlayerFaceExtractor.extractRenderState(graphics, texture, x, y, size, this.hat, false,
+		net.minecraft.client.gui.components.PlayerFaceExtractor.extractRenderState(graphics, texture, x, y, size, this.hat, false,
 				Draw.argb(alpha, 0xFFFFFF));
-		*///?} elif >=1.21.4 {
-		net.minecraft.client.gui.components.PlayerFaceRenderer.draw(graphics, texture, x, y, size, this.hat, false, Draw.argb(alpha, 0xFFFFFF));
-		//?} else {
+		//?} elif >=1.21.4 {
+		/*net.minecraft.client.gui.components.PlayerFaceRenderer.draw(graphics, texture, x, y, size, this.hat, false, Draw.argb(alpha, 0xFFFFFF));
+		*///?} else {
 		/*com.mojang.blaze3d.systems.RenderSystem.enableBlend();
 		com.mojang.blaze3d.systems.RenderSystem.setShaderColor(1f, 1f, 1f, alpha);
 		net.minecraft.client.gui.components.PlayerFaceRenderer.draw(graphics, texture, x, y, size, this.hat, false);

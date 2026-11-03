@@ -51,26 +51,26 @@ public final class THClient {
 	@Nullable
 	public static Screen getScreen(Minecraft client) {
 		//? if >=26.2 {
-		/*return client.gui.screen();
-		*///?} else {
-		return client.screen;
-		//?}
+		return client.gui.screen();
+		//?} else {
+		/*return client.screen;
+		*///?}
 	}
 
 	public static void setScreen(Minecraft client, @Nullable Screen screen) {
 		//? if >=26.2 {
-		/*client.setScreenAndShow(screen);
-		*///?} else {
-		client.setScreen(screen);
-		//?}
+		client.setScreenAndShow(screen);
+		//?} else {
+		/*client.setScreen(screen);
+		*///?}
 	}
 
 	public static boolean hideTalkers(Minecraft client) {
 		//? if >=26.2 {
-		/*boolean hidden = client.gui.hud.isHidden();
-		*///?} else {
-		boolean hidden = client.options.hideGui;
-		//?}
+		boolean hidden = client.gui.hud.isHidden();
+		//?} else {
+		/*boolean hidden = client.options.hideGui;
+		*///?}
 		return hidden || getScreen(client) instanceof SettingsScreen;
 	}
 }

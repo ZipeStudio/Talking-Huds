@@ -30,10 +30,10 @@ public class ClientEntrypoint implements ClientModInitializer {
 
 	private static void registerKey(KeyMapping key) {
 		//? if >=26.1 {
-		/*net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper.registerKeyMapping(key);
-		*///?} else {
-		net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKeyBinding(key);
-		//?}
+		net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper.registerKeyMapping(key);
+		//?} else {
+		/*net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKeyBinding(key);
+		*///?}
 	}
 
 }

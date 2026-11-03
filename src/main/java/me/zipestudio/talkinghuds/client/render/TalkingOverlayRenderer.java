@@ -7,7 +7,7 @@ import me.zipestudio.talkinghuds.config.option.DisplayMode;
 import me.zipestudio.talkinghuds.config.option.HudAnchor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public final class TalkingOverlayRenderer {
 	private TalkingOverlayRenderer() {
 	}
 
-	public static void render(GuiGraphics graphics) {
+	public static void render(GuiGraphicsExtractor graphics) {
 		//? if >=1.21.6 {
 		TalkingBarRenderer.renderIfShown(graphics);
 		//?}
@@ -46,7 +46,7 @@ public final class TalkingOverlayRenderer {
 				: FaceRenderer.margin(config.getSpeakingAnimation(), config.getHeadSize()) + 2;
 	}
 
-	public static Bounds renderMode(GuiGraphics graphics, Font font, LeafyConfig config, List<Talker> talkers, TalkerAnimator animator) {
+	public static Bounds renderMode(GuiGraphicsExtractor graphics, Font font, LeafyConfig config, List<Talker> talkers, TalkerAnimator animator) {
 		int shown = Math.min(talkers.size(), config.getMaxTalkers());
 		int overflow = talkers.size() - shown;
 		List<Talker> visible = talkers.subList(0, shown);
@@ -55,7 +55,7 @@ public final class TalkingOverlayRenderer {
 				: renderHeads(graphics, font, config, visible, talkers.subList(shown, talkers.size()), animator);
 	}
 
-	private static Bounds renderHeads(GuiGraphics graphics, Font font, LeafyConfig config, List<Talker> talkers,
+	private static Bounds renderHeads(GuiGraphicsExtractor graphics, Font font, LeafyConfig config, List<Talker> talkers,
 	                                 List<Talker> hidden, TalkerAnimator animator) {
 		HudAnchor anchor = config.getHudAnchor();
 		boolean vertical = config.getDisplayMode() == DisplayMode.HEADS_COLUMN;
@@ -120,7 +120,7 @@ public final class TalkingOverlayRenderer {
 
 	private static final float OVERFLOW_FACE_ALPHA = 0.45f;
 
-	private static void drawOverflow(GuiGraphics graphics, Font font, LeafyConfig config, List<Talker> hidden,
+	private static void drawOverflow(GuiGraphicsExtractor graphics, Font font, LeafyConfig config, List<Talker> hidden,
 	                                 int cx, int cy, int size, TalkerAnimator animator) {
 		Talker first = hidden.get(0);
 		FaceRenderer.draw(graphics, config, first.face(), cx, cy, size, animator.volume(first),
@@ -132,7 +132,7 @@ public final class TalkingOverlayRenderer {
 		Draw.popScale(graphics);
 	}
 
-	private static void drawLabel(GuiGraphics graphics, Font font, LeafyConfig config, Component text,
+	private static void drawLabel(GuiGraphicsExtractor graphics, Font font, LeafyConfig config, Component text,
 	                              int x, int y, int rgb, float alpha) {
 		if (config.getBackgroundOpacity() > 0) {
 			graphics.fill(x - 2, y - 1, x + font.width(text) + 1, y + font.lineHeight, FaceRenderer.backgroundArgb(config, alpha));
@@ -140,7 +140,7 @@ public final class TalkingOverlayRenderer {
 		Draw.text(graphics, font, text, x, y, Draw.argb(alpha, rgb));
 	}
 
-	private static Bounds renderList(GuiGraphics graphics, Font font, LeafyConfig config, List<Talker> talkers,
+	private static Bounds renderList(GuiGraphicsExtractor graphics, Font font, LeafyConfig config, List<Talker> talkers,
 	                                int overflow, TalkerAnimator animator) {
 		HudAnchor anchor = config.getHudAnchor();
 		boolean mirrored = anchor.isRight();

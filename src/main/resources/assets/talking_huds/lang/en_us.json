@@ -93,5 +93,5 @@
   "${mod_id}.list.more": "+%s more",
 
   "key.category.${mod_id}.${mod_id}": "${mod_name}",
-  "${mod_id}.keybinding.modSettings": "Settings Menu"
+  "${mod_id}.keybinding.settings": "Settings Menu"
 }

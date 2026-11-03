@@ -11,7 +11,7 @@ import me.zipestudio.talkinghuds.config.option.DisplayMode;
 import me.zipestudio.talkinghuds.config.option.HudAnchor;
 import me.zipestudio.talkinghuds.config.option.SpeakingAnimation;
 import me.zipestudio.talkinghuds.utils.EnumWithText;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public final class SettingOptions {
 
@@ -62,7 +62,7 @@ public final class SettingOptions {
 	private static final int MARKER_WIDTH = 5;
 	private static final int MARKER_HEIGHT = 2;
 
-	private static void drawPosition(GuiGraphics graphics, HudAnchor anchor, int centerX, int centerY, int argb) {
+	private static void drawPosition(GuiGraphicsExtractor graphics, HudAnchor anchor, int centerX, int centerY, int argb) {
 		int left = centerX - SCREEN_ICON_WIDTH / 2;
 		int top = centerY - SCREEN_ICON_HEIGHT / 2;
 		Draw.frame(graphics, left, top, left + SCREEN_ICON_WIDTH, top + SCREEN_ICON_HEIGHT, 1, Draw.fade(argb, 0.6f));

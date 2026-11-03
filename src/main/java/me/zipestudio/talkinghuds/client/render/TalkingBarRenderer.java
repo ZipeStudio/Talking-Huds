@@ -11,7 +11,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -52,7 +52,7 @@ public final class TalkingBarRenderer {
 		return barCenterX + Mth.floor(yaw * 173.0 / 2.0 / VISIBLE_DEGREE_RANGE);
 	}
 
-	public static void drawBackground(GuiGraphics graphics) {
+	public static void drawBackground(GuiGraphicsExtractor graphics) {
 		graphics.blitSprite(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
 				net.minecraft.resources.Identifier.withDefaultNamespace("hud/locator_bar_background"),
 				barLeft(graphics.guiWidth()), barTop(graphics.guiHeight()), BAR_WIDTH, BAR_HEIGHT);
@@ -78,7 +78,7 @@ public final class TalkingBarRenderer {
 		shownThisFrame = deltaTracker;
 	}
 
-	public static void renderIfShown(GuiGraphics graphics) {
+	public static void renderIfShown(GuiGraphicsExtractor graphics) {
 		DeltaTracker deltaTracker = shownThisFrame;
 		shownThisFrame = null;
 		if (deltaTracker != null) {
@@ -86,7 +86,7 @@ public final class TalkingBarRenderer {
 		}
 	}
 
-	private static void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+	private static void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		Minecraft mc = Minecraft.getInstance();
 		LeafyConfig config = LeafyConfig.getInstance();
 		if (!config.isEnableMod() || config.getDisplayMode() != DisplayMode.LOCATOR_BAR) {
@@ -99,10 +99,10 @@ public final class TalkingBarRenderer {
 
 		Level level = cameraEntity.level();
 		//? if >=26.2 {
-		/*Camera camera = mc.gameRenderer.mainCamera();
-		*///?} else {
-		Camera camera = mc.gameRenderer.getMainCamera();
-		//?}
+		Camera camera = mc.gameRenderer.mainCamera();
+		//?} else {
+		/*Camera camera = mc.gameRenderer.getMainCamera();
+		*///?}
 		//? if >=1.21.9 {
 		net.minecraft.world.waypoints.PartialTickSupplier partialTicks =
 				entity -> deltaTracker.getGameTimeDeltaPartialTick(!level.tickRateManager().isEntityFrozen(entity));
@@ -144,7 +144,7 @@ public final class TalkingBarRenderer {
 		BAR_ANIMATOR.endFrame();
 	}
 
-	public static void drawTalker(GuiGraphics graphics, Font font, LeafyConfig config, Talker talker, int markerCenterX,
+	public static void drawTalker(GuiGraphicsExtractor graphics, Font font, LeafyConfig config, Talker talker, int markerCenterX,
 	                              float grow, float volume, int rgb) {
 		int dotCenterY = dotCenterY(graphics.guiHeight());
 		int headSize = config.getHeadSize();

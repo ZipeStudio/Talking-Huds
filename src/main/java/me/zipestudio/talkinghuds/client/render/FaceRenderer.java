@@ -3,7 +3,7 @@ package me.zipestudio.talkinghuds.client.render;
 import me.zipestudio.talkinghuds.TalkingHuds;
 import me.zipestudio.talkinghuds.config.LeafyConfig;
 import me.zipestudio.talkinghuds.config.option.SpeakingAnimation;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 
 import java.util.UUID;
@@ -36,17 +36,17 @@ public final class FaceRenderer {
 		};
 	}
 
-	public static void draw(GuiGraphics graphics, LeafyConfig config, FaceTexture face, int centerX, int centerY,
+	public static void draw(GuiGraphicsExtractor graphics, LeafyConfig config, FaceTexture face, int centerX, int centerY,
 	                        int size, float volume, float alpha, UUID player) {
 		draw(graphics, config, face, centerX, centerY, size, volume, alpha, player, config.getAccentColor().colorFor(player));
 	}
 
-	public static void draw(GuiGraphics graphics, LeafyConfig config, FaceTexture face, int centerX, int centerY,
+	public static void draw(GuiGraphicsExtractor graphics, LeafyConfig config, FaceTexture face, int centerX, int centerY,
 	                        int size, float volume, float alpha, UUID player, int rgb) {
 		draw(graphics, config, face, centerX, centerY, size, volume, alpha, player, rgb, false);
 	}
 
-	public static void draw(GuiGraphics graphics, LeafyConfig config, FaceTexture face, int centerX, int centerY,
+	public static void draw(GuiGraphicsExtractor graphics, LeafyConfig config, FaceTexture face, int centerX, int centerY,
 	                        int size, float volume, float alpha, UUID player, int rgb, boolean steadyHighlight) {
 		if (size <= 0 || alpha <= 0.01f) {
 			return;
@@ -86,7 +86,7 @@ public final class FaceRenderer {
 		return Draw.argb(config.getBackgroundOpacity() / 100f * alpha, 0x000000);
 	}
 
-	private static void drawRings(GuiGraphics graphics, int x, int y, int size, float strength, float alpha, int rgb,
+	private static void drawRings(GuiGraphicsExtractor graphics, int x, int y, int size, float strength, float alpha, int rgb,
 	                              double phase, int room) {
 		if (strength <= SILENT) {
 			return;
@@ -99,7 +99,7 @@ public final class FaceRenderer {
 		}
 	}
 
-	public static void drawSpeaker(GuiGraphics graphics, int x, int y, float strength, float alpha, int rgb) {
+	public static void drawSpeaker(GuiGraphicsExtractor graphics, int x, int y, float strength, float alpha, int rgb) {
 		boolean talking = strength > SILENT;
 		int body = talking ? Draw.argb(alpha, 0xFFFFFF) : Draw.argb(0.55f * alpha, 0xA0A0A0);
 		int shadow = Draw.argb(0.6f * alpha, 0x000000);

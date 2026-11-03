@@ -2,7 +2,7 @@ package me.zipestudio.talkinghuds.client.screen.settings;
 
 import me.zipestudio.talkinghuds.client.render.Draw;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,13 +60,13 @@ public final class SettingsPainter {
 		this.clipBottom = bottom;
 	}
 
-	public void drawBackdrops(GuiGraphics graphics) {
+	public void drawBackdrops(GuiGraphicsExtractor graphics) {
 		for (Box panel : panels) {
 			graphics.fill(panel.left(), panel.top(), panel.right(), panel.bottom(), COLOR_BACKDROP);
 		}
 	}
 
-	public void drawForeground(GuiGraphics graphics) {
+	public void drawForeground(GuiGraphicsExtractor graphics) {
 		for (Box panel : panels) {
 			Draw.frame(graphics, panel.left(), panel.top(), panel.right(), panel.bottom(), 1, COLOR_BORDER);
 		}
@@ -93,7 +93,7 @@ public final class SettingsPainter {
 		return new Thumb(top + (view - height) * scroll / (contentHeight - view), height);
 	}
 
-	public void drawScrollbar(GuiGraphics graphics, int x, int top, int bottom, int scroll, int contentHeight, boolean active) {
+	public void drawScrollbar(GuiGraphicsExtractor graphics, int x, int top, int bottom, int scroll, int contentHeight, boolean active) {
 		Thumb thumb = scrollThumb(top, bottom, scroll, contentHeight);
 		if (thumb == null) {
 			return;

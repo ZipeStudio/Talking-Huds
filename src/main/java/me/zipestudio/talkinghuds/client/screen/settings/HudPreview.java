@@ -18,7 +18,7 @@ import me.zipestudio.talkinghuds.config.LeafyConfig;
 import me.zipestudio.talkinghuds.config.option.DisplayMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,7 +71,7 @@ public final class HudPreview {
 		return bounds.contains(x, y);
 	}
 
-	public void render(GuiGraphics graphics, Font font, LeafyConfig config, SettingsLayout layout) {
+	public void render(GuiGraphicsExtractor graphics, Font font, LeafyConfig config, SettingsLayout layout) {
 		Anim.useClock(clock());
 		try {
 			renderAt(graphics, font, config, layout);
@@ -80,7 +80,7 @@ public final class HudPreview {
 		}
 	}
 
-	private void renderAt(GuiGraphics graphics, Font font, LeafyConfig config, SettingsLayout layout) {
+	private void renderAt(GuiGraphicsExtractor graphics, Font font, LeafyConfig config, SettingsLayout layout) {
 		List<Talker> talkers = collectTalkers(config);
 		selectionPad = TalkingOverlayRenderer.edge(config) + 2;
 		animator.beginFrame(frozen);
@@ -147,7 +147,7 @@ public final class HudPreview {
 
 	private static final double[] BAR_YAWS = {-42, -14, 17, 45};
 
-	private void renderBar(GuiGraphics graphics, Font font, LeafyConfig config, List<Talker> talkers) {
+	private void renderBar(GuiGraphicsExtractor graphics, Font font, LeafyConfig config, List<Talker> talkers) {
 		//? if >=1.21.6 {
 		TalkingBarRenderer.drawBackground(graphics);
 		for (int i = 0; i < talkers.size(); i++) {
@@ -159,7 +159,7 @@ public final class HudPreview {
 		//?}
 	}
 
-	private void renderSubtitles(GuiGraphics graphics, Font font, List<Talker> talkers, SettingsLayout layout) {
+	private void renderSubtitles(GuiGraphicsExtractor graphics, Font font, List<Talker> talkers, SettingsLayout layout) {
 		String[] arrows = {"<", ">", " ", "<"};
 		int maxWidth = 0;
 		List<Component> lines = new ArrayList<>();
@@ -182,7 +182,7 @@ public final class HudPreview {
 		}
 	}
 
-	public void drawSelection(GuiGraphics graphics) {
+	public void drawSelection(GuiGraphicsExtractor graphics) {
 		if (bounds.isEmpty()) {
 			return;
 		}
@@ -194,7 +194,7 @@ public final class HudPreview {
 		Draw.frame(graphics, left, top, right, bottom, 1, SELECT_COLOR);
 	}
 
-	public void drawWarnings(GuiGraphics graphics, Font font, LeafyConfig config, SettingsLayout layout, @Nullable Minecraft minecraft) {
+	public void drawWarnings(GuiGraphicsExtractor graphics, Font font, LeafyConfig config, SettingsLayout layout, @Nullable Minecraft minecraft) {
 		if (config.getDisplayMode() == DisplayMode.SUBTITLES && minecraft != null && !VanillaSubtitles.isEnabledInOptions(minecraft)) {
 			int maxWidth = layout.previewRight - layout.previewLeft - 16;
 			Draw.wrappedCenteredText(graphics, font, TalkingHuds.text("settings.hint.subtitles_off"),

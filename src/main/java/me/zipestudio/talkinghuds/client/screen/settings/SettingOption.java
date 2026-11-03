@@ -2,7 +2,7 @@ package me.zipestudio.talkinghuds.client.screen.settings;
 
 import me.zipestudio.talkinghuds.TalkingHuds;
 import me.zipestudio.talkinghuds.config.LeafyConfig;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.Nullable;
@@ -75,7 +75,7 @@ public sealed interface SettingOption permits SettingOption.Toggle, SettingOptio
 	}
 
 	interface CellIcon<T> {
-		void draw(GuiGraphics graphics, T value, int centerX, int centerY, int argb);
+		void draw(GuiGraphicsExtractor graphics, T value, int centerX, int centerY, int argb);
 	}
 
 	record Slider(String key, double min, double max, double step, DoubleFunction<String> format,

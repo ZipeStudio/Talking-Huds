@@ -2,7 +2,7 @@ package me.zipestudio.talkinghuds.client.screen.settings;
 
 import me.zipestudio.talkinghuds.client.render.Draw;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
@@ -106,7 +106,7 @@ public final class ChoiceDropdown {
 		return row >= 0 && index >= 0 && index < values.size() ? index : -1;
 	}
 
-	public void render(GuiGraphics graphics, Font font, int mouseX, int mouseY) {
+	public void render(GuiGraphicsExtractor graphics, Font font, int mouseX, int mouseY) {
 		if (!open || values.isEmpty()) {
 			return;
 		}

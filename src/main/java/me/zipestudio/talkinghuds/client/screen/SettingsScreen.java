@@ -20,7 +20,7 @@ import me.zipestudio.talkinghuds.client.screen.settings.SettingsWidgets;
 import me.zipestudio.talkinghuds.config.LeafyConfig;
 import me.zipestudio.talkinghuds.config.option.DisplayMode;
 import me.zipestudio.talkinghuds.config.option.HudAnchor;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
@@ -215,34 +215,34 @@ public class SettingsScreen extends Screen {
 	}
 
 	//? if >=26.1 {
-	/*@Override
-	public void extractBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+	@Override
+	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		super.extractBackground(graphics, mouseX, mouseY, partialTick);
 		drawBackground(graphics);
 	}
 
 	@Override
-	public void extractRenderState(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		boolean blocked = widgets.dropdown().isOpen();
 		super.extractRenderState(graphics, blocked ? -1 : mouseX, blocked ? -1 : mouseY, partialTick);
 		drawForeground(graphics, mouseX, mouseY);
 	}
-	*///?} elif >=1.20.2 {
-	@Override
-	public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+	//?} elif >=1.20.2 {
+	/*@Override
+	public void renderBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		super.renderBackground(graphics, mouseX, mouseY, partialTick);
 		drawBackground(graphics);
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+	public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		boolean blocked = widgets.dropdown().isOpen();
 		super.render(graphics, blocked ? -1 : mouseX, blocked ? -1 : mouseY, partialTick);
 		drawForeground(graphics, mouseX, mouseY);
 	}
-	//?} else {
+	*///?} else {
 	/*@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+	public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		this.renderBackground(graphics);
 		drawBackground(graphics);
 		boolean blocked = widgets.dropdown().isOpen();
@@ -251,7 +251,7 @@ public class SettingsScreen extends Screen {
 	}
 	*///?}
 
-	private void drawBackground(GuiGraphics graphics) {
+	private void drawBackground(GuiGraphicsExtractor graphics) {
 		preview.render(graphics, this.font, config, layout);
 		sideCheckDrawn = sideCheckPending;
 		preview.drawWarnings(graphics, this.font, config, layout, this.minecraft);
@@ -260,7 +260,7 @@ public class SettingsScreen extends Screen {
 		}
 	}
 
-	private void drawForeground(GuiGraphics graphics, int mouseX, int mouseY) {
+	private void drawForeground(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
 		if (draggingHud) {
 			return;
 		}

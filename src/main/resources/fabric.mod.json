@@ -35,8 +35,8 @@
         "${fabric_api_id}": "*"
     },
     "recommends": {
-        "plasmo-voice": ">=${plasmo_voice}",
-        "simple-voice-chat": ">=${simple_voice_chat}"
+        "plasmovoice": ">=${plasmo_voice}",
+        "voicechat": ">=${simple_voice_chat}"
     },
 	"accessWidener": "${fabric_trick_accesswidener_id}",
     "mixins": [
