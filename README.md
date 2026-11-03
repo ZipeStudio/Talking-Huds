@@ -39,10 +39,19 @@
 
 **Talking Huds** — A Client-side addon for [Plasmo Voice](https://modrinth.com/mod/plasmo-voice) & [Simple Voice Chat](https://modrinth.com/mod/simple-voice-chat), that replaces their voice overlay with a new one that has several styles.
 
-### Showcase
+## Showcase
 
-**Locator Bar**
+### Locator Bar (Pulse, Rings, Bounce)
 <img src="https://github.com/ZipeStudio/talking-huds/blob/master/assets/locator_bar.webp?raw=true" width="100%" alt="locator_bar">
+
+### Faces in a Row / Column (Pulse, Rings, Bounce)
+<img src="https://github.com/ZipeStudio/talking-huds/blob/master/assets/heads.webp?raw=true" width="100%" alt="heads">
+
+### List (Pulse, Rings, Bounce)
+<img src="https://github.com/ZipeStudio/talking-huds/blob/master/assets/list.webp?raw=true" width="100%" alt="list">
+
+### Subtitles
+<img src="https://github.com/ZipeStudio/talking-huds/blob/master/assets/subtitles.webp?raw=true" width="100%" alt="subtitles">
 
 !["Compatibility" Title](https://github.com/ZipeStudio/Vault/blob/main/design/mods/main/ZScompatible.png?raw=true)
 
@@ -53,41 +62,25 @@ Works with both voice mods, even at the same time. Their own talking icons on th
 
 !["Configurable" Title](https://github.com/ZipeStudio/Vault/blob/main/design/mods/main/ZSconfigurable.png?raw=true)
 
-The screen opens from Mod Menu / the mods list or a keybind (unbound by default).
+<img src="https://github.com/ZipeStudio/talking-huds/blob/master/assets/config.webp?raw=true" width="100%" alt="config">
 
-### Display Modes
-| Mode | What it looks like                                                       |
-|---|--------------------------------------------------------------------------|
-| **Faces in a Row** | Players side by side                                                     |
-| **Faces in a Column** | Players one under another                                                |
-| **List** | Rows with head, name and a speaker icon                                  |
-| **Subtitles** | Lines in Minecraft's own subtitles ("Steve talks") with direction arrows |
-| **Locator Bar** | Player heads grow out of the dots on the vanilla Locator Bar (1.21.11+)  |
+Open the settings from Mod Menu (or the mods list), or bind a key for them in Controls. There's no key by default.
 
-- **Position** — screen edge or corner for the HUD, or drag it anywhere
-- **Head Size** — size of the player heads
-- **Max Players Shown** — how many players are shown at once, the rest are summed up as +N
-- **Animation** — how the player head reacts to the voice volume:
-  - **Pulse** — the head grows with the voice
-  - **Rings** — square rings ripple out from the head
-  - **Bounce** — the head hops with the voice
-  - **None** — no animation
-- **Fading Time** — how long a player stays on the HUD, fading out, after they stop talking
-
-### Look
-- **Show Names** — player names under their heads. The List always shows them
-- **Name Length** — longer names are cut to this many characters (16 by default)
-- **Show Yourself** — also show yourself while you talk
-- **Highlight** — a glow and frame around the player head, brighter while they talk
-- **Color** — a fixed color, or **Player Color**: the same as their dot on the Locator Bar
-- **Background** — opacity of the background behind List rows and names
-
-### Settings Screen
-All settings are on one screen, next to a live preview with fake talkers:
 - **Drag** the HUD to move it
 - **Scroll** over it to resize
-- **Arrow keys** nudge it by a pixel
-- **Right-click** resets the HUD or any option
+- **Arrow keys** nudge it pixel by pixel
+- **R-click** the HUD or any option to reset it
+
+### What you can change
+- **Display mode**: Faces in a Row, Faces in a Column, List, Subtitles or Locator Bar (1.21.6+)
+- **Position** and **head size**, plus how many players fit at once
+- **Animation** while someone talks: Pulse, Rings, Bounce or none
+- **Fading time**: how long a player stays after they go quiet
+- **Names**: show them or not, and how long they can be (16 characters by default)
+- **Show yourself** while you're talking
+- **Highlight**: a glow and a frame that light up when the player speaks
+- **Color**: one for everyone, or **Player Color** to match their dot on the Locator Bar
+- **Background** opacity behind List rows and names
 
 !["Support" Title](https://github.com/ZipeStudio/Vault/blob/main/design/mods/main/ZSsupport.png?raw=true)
 ### Want to support mod and authors? Just tell everyone about this mod!
