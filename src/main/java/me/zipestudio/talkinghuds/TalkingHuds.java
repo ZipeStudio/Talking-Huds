@@ -10,7 +10,7 @@ public final class TalkingHuds {
 
 	public static final String MOD_NAME = /*$ mod_name*/ "Talking Huds";
 	public static final String MOD_ID = /*$ mod_id*/ "talking_huds";
-	public static final String MOD_VERSION = /*$ mod_version*/ "1.0.0+26.3+fabric";
+	public static final String MOD_VERSION = /*$ mod_version*/ "1.0.1+26.3+fabric";
 	public static final String MOD_AUTHORS = /*$ mod_authors*/ "ZipeStudio, MrLemonHog";
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
